@@ -104,6 +104,7 @@ const MemoizedGraph = React.memo(function Layout({
           objectNode: ObjectNode,
         }}
         fitView
+        onlyRenderVisibleElements
       />
     </StyledEditorWrapper>
   );
