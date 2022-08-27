@@ -79,11 +79,11 @@ const flatten = (xs: { id: string; children: never[] }[]) =>
   xs.flatMap(({ children, ...rest }) => [rest, ...flatten(children)]);
 
 const relationships = (xs: { id: string; children: never[] }[]) => {
-  return xs.flatMap(({ id: from, children = [] }) => [
-    ...children.map(({ id: to }) => ({
-      id: `e${from}-${to}`,
-      from,
-      to,
+  return xs.flatMap(({ id: source, children = [] }) => [
+    ...children.map(({ id: target }) => ({
+      id: `e${source}-${target}`,
+      source,
+      target,
     })),
     ...relationships(children),
   ]);

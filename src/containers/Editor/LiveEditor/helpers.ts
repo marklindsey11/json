@@ -1,5 +1,44 @@
-import { CanvasDirection, NodeData, EdgeData } from "reaflow";
+import { NodeData, EdgeData } from "reaflow";
 import { parser } from "src/utils/json-editor-parser";
+import dagre from "dagre";
+import { Position } from "react-flow-renderer";
+
+const dagreGraph = new dagre.graphlib.Graph();
+dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+export const getLayoutedElements = (nodes, edges, direction = "LR") => {
+  const isHorizontal = direction === "LR";
+  dagreGraph.setGraph({ rankdir: direction });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, {
+      width: node.data.width,
+      height: node.data.height,
+    });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  const mappedNodes = nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+
+    return {
+      ...node,
+      position: {
+        x: nodeWithPosition.x - node.data.width / 2,
+        y: nodeWithPosition.y - node.data.height / 2,
+      },
+      targetPosition: isHorizontal ? Position.Left : Position.Top,
+      sourcePosition: isHorizontal ? Position.Right : Position.Bottom,
+    };
+  });
+
+  return { nodes: mappedNodes, edges };
+};
 
 export function getEdgeNodes(
   graph: string,
@@ -25,15 +64,19 @@ export function getEdgeNodes(
       const longestLine = lineLengths.reverse()[0];
 
       const height = lines.length * 17.8 < 30 ? 40 : lines.length * 17.8;
-
       nodes.push({
         id: el.id,
-        text: el.text,
         data: {
+          label: el.text,
           isParent: el.parent,
+          width: isExpanded ? 35 + longestLine * (el.parent ? 9 : 8) : 180,
+          height,
         },
-        width: isExpanded ? 35 + longestLine * (el.parent ? 9 : 8) : 180,
-        height,
+        type: el.text instanceof Object ? "objectNode" : "textNode",
+        position: {
+          x: 0,
+          y: 0,
+        },
       });
     } else {
       edges.push(el);
@@ -46,19 +89,13 @@ export function getEdgeNodes(
   };
 }
 
-export function getNextLayout(layout: CanvasDirection) {
+export function getNextLayout(layout: "TB" | "LR") {
   switch (layout) {
-    case "RIGHT":
-      return "DOWN";
-
-    case "DOWN":
-      return "LEFT";
-
-    case "LEFT":
-      return "UP";
+    case "LR":
+      return "TB";
 
     default:
-      return "RIGHT";
+      return "LR";
   }
 }
 

@@ -15,7 +15,7 @@ interface ConfigActions {
 export interface Config {
   json: string;
   cursorMode: "move" | "navigation";
-  layout: CanvasDirection;
+  layout: "TB" | "LR";
   expand: boolean;
   hideEditor: boolean;
   zoomPanPinch?: ReactZoomPanPinchRef;
@@ -25,7 +25,7 @@ export interface Config {
 const initialStates: Config = {
   json: JSON.stringify(defaultJson),
   cursorMode: "move",
-  layout: "RIGHT",
+  layout: "LR",
   expand: true,
   hideEditor: false,
   performanceMode: false,

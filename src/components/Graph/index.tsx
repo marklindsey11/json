@@ -7,10 +7,16 @@ import {
 import { Canvas, EdgeData, ElkRoot, NodeData, NodeProps } from "reaflow";
 import { CustomNode } from "src/components/CustomNode";
 import { NodeModal } from "src/containers/Modals/NodeModal";
-import { getEdgeNodes } from "src/containers/Editor/LiveEditor/helpers";
+import {
+  getEdgeNodes,
+  getLayoutedElements,
+} from "src/containers/Editor/LiveEditor/helpers";
 import useConfig from "src/hooks/store/useConfig";
 import styled from "styled-components";
 import shallow from "zustand/shallow";
+import ReactFlow from "react-flow-renderer";
+import { TextNode } from "./TextNode";
+import { ObjectNode } from "./ObjectNode";
 
 interface LayoutProps {
   isWidget: boolean;
@@ -55,9 +61,9 @@ const MemoizedGraph = React.memo(function Layout({
   React.useEffect(() => {
     const { nodes, edges } = getEdgeNodes(json, expand);
 
-    setNodes(nodes);
-    setEdges(edges);
-  }, [json, expand]);
+    setNodes(getLayoutedElements(nodes, edges, layout).nodes);
+    setEdges(getLayoutedElements(nodes, edges, layout).edges);
+  }, [json, expand, layout]);
 
   const onInit = (ref: ReactZoomPanPinchRef) => {
     setConfig("zoomPanPinch", ref);
@@ -90,37 +96,15 @@ const MemoizedGraph = React.memo(function Layout({
 
   return (
     <StyledEditorWrapper isWidget={isWidget}>
-      <TransformWrapper
-        onInit={onInit}
-        maxScale={1.8}
-        minScale={0.4}
-        initialScale={0.7}
-        wheel={{
-          step: 0.05,
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={{
+          textNode: TextNode,
+          objectNode: ObjectNode,
         }}
-      >
-        <TransformComponent
-          wrapperStyle={{
-            width: "100%",
-            height: "100%",
-            overflow: "hidden",
-          }}
-        >
-          <Canvas
-            nodes={nodes}
-            edges={edges}
-            maxWidth={size.width + 100}
-            maxHeight={size.height + 100}
-            direction={layout}
-            key={layout}
-            onLayoutChange={onLayoutChange}
-            onCanvasClick={onCanvasClick}
-            node={node}
-            zoomable={false}
-            readonly
-          />
-        </TransformComponent>
-      </TransformWrapper>
+        fitView
+      />
     </StyledEditorWrapper>
   );
 });
