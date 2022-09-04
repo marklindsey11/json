@@ -8,10 +8,10 @@ import GlobalStyle from "src/constants/globalStyle";
 import { darkTheme, lightTheme } from "src/constants/theme";
 import { GoogleAnalytics } from "src/components/GoogleAnalytics";
 import useConfig from "src/hooks/store/useConfig";
-import { decompress } from "compress-json";
 import { useRouter } from "next/router";
-import { isValidJson } from "src/utils/isValidJson";
 import useStored from "src/hooks/store/useStored";
+import axios from "axios";
+import { decompressAsync } from "lzutf8";
 
 if (process.env.NODE_ENV !== "development") {
   init({
@@ -27,16 +27,28 @@ function JsonCrack({ Component, pageProps }: AppProps) {
   const [isRendered, setRendered] = React.useState(false);
 
   React.useEffect(() => {
-    const isJsonValid =
-      typeof query.json === "string" &&
-      isValidJson(decodeURIComponent(query.json));
+    (async () => {
+      if (!query.json) return;
 
-    if (isJsonValid) {
-      const jsonDecoded = decompress(JSON.parse(isJsonValid));
-      const jsonString = JSON.stringify(jsonDecoded);
+      const res = await axios.get(
+        `https://api.buildable.dev/@62190653596cdb0012a7f3b1/test/get-json?json=${query.json}`
+      );
 
-      setJson(jsonString);
-    }
+      const results = res.data.data;
+
+      if (results[0] && results[0].json) {
+
+        decompressAsync(
+          results[0].json,
+          {
+            inputEncoding: "BinaryString",
+            outputEncoding: "String",
+            useWebWorker: true,
+          },
+          setJson
+        );
+      }
+    })();
   }, [query.json, setJson]);
 
   React.useEffect(() => {
