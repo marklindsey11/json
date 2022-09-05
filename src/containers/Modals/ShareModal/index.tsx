@@ -109,7 +109,7 @@ export const ShareModal: React.FC<ModalProps & { shareId: string }> = ({
               </StyledFlex>
             </StyledContainer>
             <StyledInfo>
-              &#9888; <b>Links are kept for 15 days only!</b> This feature is
+              &#9888; <b>Links are kept for 7 days only!</b> This feature is
               currently in beta, links may be deleted at any time without
               notification.
             </StyledInfo>
