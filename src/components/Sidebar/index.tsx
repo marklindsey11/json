@@ -26,6 +26,8 @@ import shallow from "zustand/shallow";
 import { MdCenterFocusWeak } from "react-icons/md";
 import { getNextLayout } from "src/utils/getNextLayout";
 import { DownloadModal } from "src/containers/Modals/DownloadModal";
+import axios from "axios";
+import { createWorkerFactory, useWorker } from "@shopify/react-web-worker";
 
 const StyledSidebar = styled.div`
   display: flex;
@@ -140,7 +142,10 @@ function rotateLayout(layout: "LEFT" | "RIGHT" | "DOWN" | "UP") {
   return 360;
 }
 
+const createWorker = createWorkerFactory(() => import("./worker"));
+
 export const Sidebar: React.FC = () => {
+  const worker = useWorker(createWorker);
   const getJson = useConfig((state) => state.getJson);
   const setConfig = useConfig((state) => state.setConfig);
   const centerView = useConfig((state) => state.centerView);
@@ -148,7 +153,7 @@ export const Sidebar: React.FC = () => {
   const [clearVisible, setClearVisible] = React.useState(false);
   const [shareVisible, setShareVisible] = React.useState(false);
   const [isDownloadVisible, setDownloadVisible] = React.useState(false);
-  const { push } = useRouter();
+  const [shareId, setShareId] = React.useState("");
 
   const [expand, layout, hideEditor] = useConfig(
     (state) => [state.expand, state.layout, state.hideEditor],
@@ -162,6 +167,24 @@ export const Sidebar: React.FC = () => {
     a.href = window.URL.createObjectURL(file);
     a.download = "jsoncrack.json";
     a.click();
+  };
+
+  const handleShare = async () => {
+    try {
+      setShareId("");
+      setShareVisible(true);
+
+      const encoded = await worker.compressor(getJson());
+      const url = await axios.post(
+        "https://api.buildable.dev/@62190653596cdb0012a7f3b1/test/add-json",
+        { json: encoded }
+      );
+
+      setShareId(url.data.id);
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occured while generating share link!");
+    }
   };
 
   const toggleExpandCollapse = () => {
@@ -230,7 +253,7 @@ export const Sidebar: React.FC = () => {
           </StyledElement>
         </Tooltip>
         <Tooltip className="desktop" title="Share">
-          <StyledElement onClick={() => setShareVisible(true)}>
+          <StyledElement onClick={handleShare}>
             <AiOutlineLink />
           </StyledElement>
         </Tooltip>
@@ -260,7 +283,11 @@ export const Sidebar: React.FC = () => {
       </StyledBottomWrapper>
       <ImportModal visible={uploadVisible} setVisible={setUploadVisible} />
       <ClearModal visible={clearVisible} setVisible={setClearVisible} />
-      <ShareModal visible={shareVisible} setVisible={setShareVisible} />
+      <ShareModal
+        visible={shareVisible}
+        setVisible={setShareVisible}
+        shareId={shareId}
+      />
       <DownloadModal
         visible={isDownloadVisible}
         setVisible={setDownloadVisible}
