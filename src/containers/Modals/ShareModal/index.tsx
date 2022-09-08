@@ -4,8 +4,8 @@ import styled, { keyframes } from "styled-components";
 import { Modal, ModalProps } from "src/components/Modal";
 import { Button } from "src/components/Button";
 import { Input } from "src/components/Input";
-import packageJson from "package.json";
 import { CgSpinner } from "react-icons/cg";
+import { baseURL } from "src/constants/data";
 
 const StyledFlex = styled.div`
   display: flex;
@@ -60,16 +60,13 @@ const StyledInfo = styled.p`
   font-family: 'Roboto', sans-serif;
 `;
 
-const jsoncrackHost =
-  process.env.NEXT_PUBLIC_JSONCRACK_HOST || packageJson.homepage;
-
 export const ShareModal: React.FC<ModalProps & { shareId: string }> = ({
   shareId,
   visible,
   setVisible,
 }) => {
-  const embedText = `<iframe src="${jsoncrackHost}/widget?json=${shareId}" width="512" height="384" style="border: 2px solid #b9bbbe; border-radius: 6px;"></iframe>`;
-  const shareURL = `${jsoncrackHost}/editor?json=${shareId}`;
+  const embedText = `<iframe src="${baseURL}/widget?json=${shareId}" width="512" height="384" style="border: 2px solid #b9bbbe; border-radius: 6px;"></iframe>`;
+  const shareURL = `${baseURL}/editor?json=${shareId}`;
 
   const handleShare = async (value: string) => {
     navigator.clipboard.writeText(value);
