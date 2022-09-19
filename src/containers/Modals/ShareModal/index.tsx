@@ -1,11 +1,11 @@
 import React from "react";
 import toast from "react-hot-toast";
-import styled, { keyframes } from "styled-components";
-import { Modal, ModalProps } from "src/components/Modal";
+import { CgSpinner } from "react-icons/cg";
 import { Button } from "src/components/Button";
 import { Input } from "src/components/Input";
-import { CgSpinner } from "react-icons/cg";
+import { Modal, ModalProps } from "src/components/Modal";
 import { baseURL } from "src/constants/data";
+import styled, { keyframes } from "styled-components";
 
 const StyledFlex = styled.div`
   display: flex;
@@ -85,10 +85,7 @@ export const ShareModal: React.FC<ModalProps & { shareId: string }> = ({
               Share Link
               <StyledFlex>
                 <Input value={shareURL} type="url" readOnly />
-                <Button
-                  status="SECONDARY"
-                  onClick={() => handleShare(shareURL)}
-                >
+                <Button status="SECONDARY" onClick={() => handleShare(shareURL)}>
                   Copy
                 </Button>
               </StyledFlex>
@@ -97,10 +94,7 @@ export const ShareModal: React.FC<ModalProps & { shareId: string }> = ({
               Embed into your website
               <StyledFlex>
                 <Input value={embedText} type="url" readOnly />
-                <Button
-                  status="SECONDARY"
-                  onClick={() => handleShare(embedText)}
-                >
+                <Button status="SECONDARY" onClick={() => handleShare(embedText)}>
                   Copy
                 </Button>
               </StyledFlex>

@@ -1,5 +1,5 @@
-import styled, { DefaultTheme } from "styled-components";
 import { LinkItUrl } from "react-linkify-it";
+import styled, { DefaultTheme } from "styled-components";
 
 function getTypeColor(value: string, theme: DefaultTheme) {
   if (!Number.isNaN(+value)) return "#FD0079";
@@ -31,10 +31,11 @@ export const StyledForeignObject = styled.foreignObject<{
   &.searched {
     border: 2px solid ${({ theme }) => theme.TEXT_POSITIVE};
     border-radius: 2px;
+    box-sizing: border-box;
   }
 
   .highlight {
-    border: 2px dashed #FF2970;
+    border: 2px dashed #ff2970;
     background: rgba(255, 214, 0, 0.3);
   }
 
@@ -69,17 +70,17 @@ export const StyledKey = styled.span<{
   font-size: ${({ parent }) => parent && "14px"};
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: ${({ parent }) => parent && "10px"};
+  padding: ${({ objectKey }) => !objectKey && 10}px;
 `;
 
 export const StyledRow = styled.span.attrs<{
-  'data-key': string;
+  "data-key": string;
   theme: DefaultTheme;
-}>((props) => ({
+}>(props => ({
   style: {
     color: getTypeColor(props["data-key"], props.theme),
   },
-}))<{ 'data-key': string; theme: DefaultTheme }>`
+}))<{ "data-key": string; theme: DefaultTheme }>`
   display: block;
   height: 18px;
   overflow: hidden;

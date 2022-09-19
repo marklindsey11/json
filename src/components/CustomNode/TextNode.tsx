@@ -1,6 +1,6 @@
 import React from "react";
-import { MdCompareArrows } from "react-icons/md";
-import { useInViewport } from "react-in-viewport";
+import { MdLink, MdLinkOff } from "react-icons/md";
+// import { useInViewport } from "react-in-viewport";
 import { CustomNodeProps } from "src/components/CustomNode";
 import useConfig from "src/hooks/store/useConfig";
 import useGraph from "src/hooks/store/useGraph";
@@ -35,33 +35,26 @@ const StyledTextNodeWrapper = styled.div<{ hasCollapse: boolean }>`
   width: 100%;
 `;
 
-const TextNode: React.FC<
-  CustomNodeProps<string> & { node: NodeData; hasCollapse: boolean }
-> = ({
+const TextNode: React.FC<CustomNodeProps> = ({
   node,
-  width,
-  height,
-  value,
-  isParent = false,
-  hasCollapse = false,
   x,
   y,
+  hasCollapse = false,
 }) => {
+  const { id, text, width, height, data } = node;
   const ref = React.useRef(null);
+  const hideCollapse = useStored(state => state.hideCollapse);
+  const expandNodes = useGraph(state => state.expandNodes);
+  const collapseNodes = useGraph(state => state.collapseNodes);
+  const isExpanded = useGraph(state => state.collapsedParents.includes(id));
+  const performanceMode = useConfig(state => state.performanceMode);
   // const { inViewport } = useInViewport(ref);
-  const performanceMode = useConfig((state) => state.performanceMode);
-
-  const hideCollapse = useStored((state) => state.hideCollapse);
-  const expandNodes = useGraph((state) => state.expandNodes);
-  const collapseNodes = useGraph((state) => state.collapseNodes);
-  const [isExpanded, setIsExpanded] = React.useState(true);
 
   const handleExpand = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setIsExpanded(!isExpanded);
 
-    if (isExpanded) collapseNodes(node.id);
-    else expandNodes(node.id);
+    if (!isExpanded) collapseNodes(id);
+    else expandNodes(id);
   };
 
   return (
@@ -70,28 +63,27 @@ const TextNode: React.FC<
       height={height}
       x={0}
       y={0}
-      data-nodeid={node.id}
-      ref={ref}
       hideCollapse={hideCollapse}
-      hasCollapse={isParent && hasCollapse}
+      hasCollapse={data.isParent && hasCollapse}
+      ref={ref}
     >
-      <StyledTextNodeWrapper hasCollapse={isParent && !hideCollapse}>
+      <StyledTextNodeWrapper hasCollapse={data.isParent && !hideCollapse}>
         {(!performanceMode || inViewport) && (
           <Styled.StyledKey
             data-x={x}
             data-y={y}
-            data-key={JSON.stringify(value)}
-            parent={isParent}
+            data-key={JSON.stringify(text)}
+            parent={data.isParent}
           >
             <Styled.StyledLinkItUrl>
-              {JSON.stringify(value).replaceAll('"', "")}
+              {JSON.stringify(text).replaceAll('"', "")}
             </Styled.StyledLinkItUrl>
           </Styled.StyledKey>
         )}
 
-        {inViewport && isParent && hasCollapse && !hideCollapse && (
+        {inViewport && data.isParent && hasCollapse && !hideCollapse && (
           <StyledExpand onClick={handleExpand}>
-            <MdCompareArrows size={18} />
+            {isExpanded ? <MdLinkOff size={18} /> : <MdLink size={18} />}
           </StyledExpand>
         )}
       </StyledTextNodeWrapper>
@@ -99,4 +91,8 @@ const TextNode: React.FC<
   );
 };
 
-export default TextNode;
+function propsAreEqual(prev: CustomNodeProps, next: CustomNodeProps) {
+  return prev.node.text === next.node.text && prev.node.width === next.node.width;
+}
+
+export default React.memo(TextNode, propsAreEqual);

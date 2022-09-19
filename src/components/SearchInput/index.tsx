@@ -10,7 +10,7 @@ const StyledInputWrapper = styled.div`
   justify-content: space-between;
   background: ${({ theme }) => theme.BACKGROUND_TERTIARY};
   border-radius: 4px;
-  height: 28px;
+  height: 25px;
 `;
 
 const StyledForm = styled.form`
@@ -72,16 +72,10 @@ export const SearchInput: React.FC = () => {
         <StyledInput
           type="text"
           value={content.value}
-          onChange={(e) =>
-            setContent((val) => ({ ...val, value: e.target.value }))
-          }
+          onChange={e => setContent(val => ({ ...val, value: e.target.value }))}
           placeholder="Search Node"
         />
-        <StyledSearchButton
-          type="reset"
-          aria-label="search"
-          onClick={handleClear}
-        >
+        <StyledSearchButton type="reset" aria-label="search" onClick={handleClear}>
           {content.value ? (
             <IoCloseSharp size={18} />
           ) : (

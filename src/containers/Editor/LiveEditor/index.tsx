@@ -1,7 +1,7 @@
 import React from "react";
-import styled from "styled-components";
+import { GraphCanvas } from "src/containers/Editor/LiveEditor/GraphCanvas";
 import { Tools } from "src/containers/Editor/Tools";
-import { Graph } from "src/components/Graph";
+import styled from "styled-components";
 
 const StyledLiveEditor = styled.div`
   position: relative;
@@ -11,7 +11,7 @@ const LiveEditor: React.FC = () => {
   return (
     <StyledLiveEditor>
       <Tools />
-      <Graph />
+      <GraphCanvas />
     </StyledLiveEditor>
   );
 };
