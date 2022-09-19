@@ -57,7 +57,7 @@ const StyledSpinner = styled.div`
 const StyledInfo = styled.p`
   font-size: 14px;
   color: ${({ theme }) => theme.TEXT_DANGER};
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 `;
 
 export const ShareModal: React.FC<ModalProps & { shareId: string }> = ({

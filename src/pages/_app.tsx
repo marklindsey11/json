@@ -2,6 +2,8 @@ import React from "react";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { init } from "@sentry/nextjs";
+import axios from "axios";
+import { decompressAsync } from "lzutf8";
 import { Toaster } from "react-hot-toast";
 import { GoogleAnalytics } from "src/components/GoogleAnalytics";
 import GlobalStyle from "src/constants/globalStyle";
@@ -9,8 +11,6 @@ import { darkTheme, lightTheme } from "src/constants/theme";
 import useConfig from "src/hooks/store/useConfig";
 import useStored from "src/hooks/store/useStored";
 import { ThemeProvider } from "styled-components";
-import axios from "axios";
-import { decompressAsync } from "lzutf8";
 
 if (process.env.NODE_ENV !== "development") {
   init({

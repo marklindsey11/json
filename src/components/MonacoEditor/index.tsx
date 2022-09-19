@@ -39,7 +39,6 @@ export const MonacoEditor = ({
   const lightmode = useStored(state => (state.lightmode ? "light" : "vs-dark"));
   const [value, setValue] = React.useState<string | undefined>("");
 
-
   React.useEffect(() => {
     const { nodes, edges } = parser(json, expand);
 
